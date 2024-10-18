@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe - Part 4</title>
+    <style>
+         .board{
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+            margin: 20px auto;
+            width: max-content;
+        }
+        .square{
+                width: 100px;
+                height: 100px;
+                font-size: 80px;
+                text-align: center;
+                line-height: 100px;
+                border: 1px solid #000;
+        }
+        .square:hover {
+                background-color: lightcoral;
+        }
+        .status {
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">Tic Tac Toe Game</h1>
+    <div class="status" id="turn">Turn: X</div>
+    <button onclick="startGame()">Start Game</button>
+    <div class="board" id="board"></div>
+    <div class="status" id="result">Game in Progress...</div>
+    <script>
+        let currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
+        let boardState = Array(9).fill('-');
+        let gameOver = false;
+        let winConditions = [];
+        document.getElementById('turn').innerText = `Turn: ${currentPlayer}`;
+
+        function startGame() {
+            document.querySelectorAll('.square').forEach(sq=> sq.innerText = '');
+            boardState.fill('-');
+            currentPlayer = Math.random() < 0.5 ? 'X' : "O";
+            document.getElementById('turn').innerText = `Turn: ${currentPlayer}`;
+            document.getElementById('result').innerText = 'Game in Progress...';
+            gameOver = false;
+        }
+
+        function updateBoardState(){
+            boardState = [];
+            document.querySelectorAll('.square').forEach((square, index) => {
+                boardState[index] = square.innerText || '-';
+            });
+        }
+
+        function updateWinConditions() {
+            winConditions = [
+                `${boardState[0]}${boardState[1]}${boardState[2]}`,
+                `${boardState[3]}${boardState[4]}${boardState[5]}`,
+                `${boardState[6]}${boardState[7]}${boardState[8]}`,
+                `${boardState[0]}${boardState[3]}${boardState[6]}`,
+                `${boardState[1]}${boardState[4]}${boardState[7]}`,
+                `${boardState[2]}${boardState[5]}${boardState[8]}`,
+                `${boardState[0]}${boardState[4]}${boardState[8]}`,
+                `${boardState[2]}${boardState[4]}${boardState[6]}`
+            ];
+        }
+
+        function checkWinner() {
+            updateWinConditions();
+            for(let winString of winConditions){
+                if(winString === 'XXX' || winString === 'OOO') {
+                    document.getElementById('result').innerText = `${winString[0]} Wins! Game Over.`;
+                    gameOver = true;
+                    return true;
+                }
+            }
+            if (!boardState.includes('-')) {
+                document.getElementById('result').innerText = 'Stalemate! Game Over.';
+                gameOver = true;
+                return true;
+            }
+            return false;
+        }
+        document.getElementById('board').addEventListener('click', function(e) {
+            if (gameOver) return;
+            const square = e.target;
+            const index = Array.from(document.getElementById('board').children).indexOf(square);
+            if(square.innerText === '' && boardState[index] === '-') {
+                square.innerText = currentPlayer;
+                updateBoardState();
+                let moves = [];
+                document.querySelectorAll('.square').forEach((sq,idx) => {
+                    moves[idx] = sq.innerText || '-';
+                });
+                if(!checkWinner()) {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    document.getElementById('turn').innerText = `Turn: ${currentPlayer}`;
+                }
+            }
+        });
+        const NUM_SQUARES = 9;
+        for(let i = 0; i < NUM_SQUARES; i++)
+        {
+            const id = "sq" + i;
+            document.write("<div class='square' id='" + id + "'></div>");
+        }
+        window.onload = function() {
+            document.getElementById('sq2').innerText = 'X';
+            document.getElementById('sq3').innerText = 'O';
+            const board = document.getElementById('board');
+            const squares = document.querySelectorAll('.square');
+            squares.forEach(square => board.appendChild(square));
+        };
+    </script>
+</body>
+</html>
